@@ -25,7 +25,7 @@ const connectToSocket = (server) => {
 
       // Notify all users in the call about the new user
       connections[path].forEach((id) => {
-        io.to(id).emit("user-joined", socket.id, socket.id, connections[path]);
+        io.to(id).emit("user-joined", socket.id, connections[path]);
       });
 
       // Send chat history to the newly joined user

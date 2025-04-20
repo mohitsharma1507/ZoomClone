@@ -1,0 +1,129 @@
+/* General container styling */
+.meetVideoContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  /* margin-left: -19rem; */
+}
+
+.buttonContainer {
+  margin-bottom: -45rem;
+}
+
+.buttonContainer svg{
+  font-size: 3rem;
+}
+
+.chatRoom{
+  position: absolute;
+  padding-inline: 20px;
+  height: 90vh;
+  width: 30vw;
+  right: 0;
+  border-radius: 10px;
+  background-color: #fff;
+  
+}
+
+.chatContainer{
+  position: relative;
+  height: 100%;
+}
+
+
+
+.chatArea{
+  position: absolute;
+  bottom: 0;
+}
+
+/* Styling for individual video blocks */
+.ConferenceView {
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.ConferenceView  video{
+  width: 40vw;
+  height: 20vh;
+  min-width: 30vw;
+  border-radius: 10px;
+}
+.meetUserVideo {
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  margin-top: 3rem;
+}
+
+/* Style for local video preview */
+video {
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  margin: 10px;
+}
+
+/* Styling the form elements when username is requested */
+input[type="text"] {
+  width: 300px;
+  padding: 10px;
+  margin: 20px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+button {
+  background-color: #3f51b5;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #303f9f;
+}
+
+/* Styling for 'Enter into Lobby' section */
+h2 {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: #3f51b5;
+}
+
+/* Styling the video elements */
+video {
+  background-color: black;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  margin: 10px;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .meetVideoContainer {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .meetUserVideo, .ConferenceView video {
+    width: 90%;
+    height: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .meetUserVideo, .ConferenceView video {
+    width: 100%;
+  }
+}
