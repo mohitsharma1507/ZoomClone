@@ -13,7 +13,13 @@ export default function LandingPage() {
           <h2> Zoom Video Call</h2>
         </div>
         <div className="navList">
-          <p>Join as a Guest</p>
+          <p
+            onClick={() => {
+              navigate("/ad1234");
+            }}
+          >
+            Join as a Guest
+          </p>
           <p
             onClick={() => {
               navigate("/register");

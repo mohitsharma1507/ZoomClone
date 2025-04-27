@@ -486,7 +486,7 @@ export default function VideoMeetComponent() {
     } catch (e) {
       console.log("Error ending call:", e);
     }
-    navigate("/");
+    navigate("/home");
   };
 
   const handleKeyPress = (event) => {
