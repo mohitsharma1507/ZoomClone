@@ -11,8 +11,8 @@ import History from "./pages/history";
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <BrowserRouter>
+      <AuthProvider>
         <Routes>
           <Route path="/" element={<LandingPage />}></Route>
           <Route path="/register" element={<Register />}></Route>
@@ -21,8 +21,8 @@ function App() {
           <Route path="/history" element={<History />}></Route>
           <Route path="/:url" element={<VideoMeetComponent />}></Route>
         </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 

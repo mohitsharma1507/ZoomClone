@@ -5,19 +5,26 @@ export const AuthContext = createContext({});
 
 const client = axios.create({
   baseURL: `http://localhost:8080`,
-  withCredentials: true, // important if your backend is setting cookies
+  withCredentials: true,
 });
 
 export const AuthProvider = ({ children }) => {
- 
-
   const getHistoryOfUser = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await client.get("/get_all_activity", {
+      if (!token) {
+        return null;
+      }
+      const response = await client.get("/user/get_all_activity", {
         params: { token },
       });
-      return response.data;
+      console.log("History API response:", response.data);
+      if (Array.isArray(response.data)) {
+        return response.data;
+      } else {
+        console.error("Expected array but got:", response.data);
+        return [];
+      }
     } catch (err) {
       console.error("Error getting history:", err);
       throw err;
@@ -27,7 +34,7 @@ export const AuthProvider = ({ children }) => {
   const addToUserHistory = async (meetingCode) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await client.post("/add_to_activity", {
+      const response = await client.post("/user/add_to_activity", {
         token,
         meeting_code: meetingCode,
       });

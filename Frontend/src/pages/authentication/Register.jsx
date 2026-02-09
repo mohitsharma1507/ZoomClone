@@ -30,8 +30,8 @@ function Register() {
       [name]: "",
     });
   };
-  const handleBlur = () => {
-    const { name, target } = e.target;
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
     if (!value.trim()) {
       setErrors({
         ...errors,
@@ -72,13 +72,13 @@ function Register() {
         {
           ...inputValue,
         },
-        { withCredentials: true }
+        { withCredentials: true },
       );
       const { success, message } = data;
       if (success) {
         handleSuccess(message);
         setTimeout(() => {
-          navigate("/");
+          navigate("/Login");
         }, 1000);
       } else {
         handleError(message);
