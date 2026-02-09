@@ -8,7 +8,7 @@ const router = require("express").Router();
 
 router.post("/register", Register);
 router.post("/login", Login);
-router.post("/add_to_activity", addToHistory);
-router.get("/get_all_activity", getUserHistory);
+router.get("/user/get_all_activity", getUserHistory);
+router.post("/user/add_to_activity", addToHistory);
 
 module.exports = router;
