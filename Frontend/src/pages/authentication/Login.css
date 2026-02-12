@@ -1,5 +1,5 @@
-/* Register Container */
-.register-container {
+/* Login Container */
+.login-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -7,51 +7,50 @@
   background: linear-gradient(135deg, #ff6347 0%, #ff4500 100%);
   padding: 2rem;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.register-wrapper {
-  display: flex;
-  max-width: 1200px;
-  width: 100%;
-  background: white;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: slideUp 0.6s ease-out;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Image Section */
-.register-image-section {
-  flex: 1;
-  background: linear-gradient(135deg, #fff5f0 0%, #ffe8dc 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem;
   position: relative;
   overflow: hidden;
 }
 
-.register-image-section::before {
+.login-wrapper {
+  position: relative;
+  z-index: 10;
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Login Card */
+.login-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 3rem 3.5rem;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3),
+              0 0 0 1px rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.login-card::before {
   content: '';
   position: absolute;
   top: -50%;
-  left: -50%;
+  right: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(255, 99, 71, 0.1) 0%, transparent 70%);
-  animation: rotate 20s linear infinite;
+  background: radial-gradient(circle, rgba(255, 99, 71, 0.05) 0%, transparent 70%);
+  animation: rotate 30s linear infinite;
 }
 
 @keyframes rotate {
@@ -63,62 +62,37 @@
   }
 }
 
-.register-image-section img {
-  width: 100%;
-  max-width: 450px;
-  height: auto;
+/* Login Header */
+.login-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
   position: relative;
   z-index: 1;
-  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.2));
-  animation: float 3s ease-in-out infinite;
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-}
-
-/* Form Section */
-.register-form-section {
-  flex: 1;
-  padding: 3rem 3.5rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.register-header {
-  margin-bottom: 2rem;
-}
-
-.register-header h1 {
+.login-header h1 {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #2d3748;
   margin-bottom: 0.5rem;
-  padding-bottom: 0.3rem;
-  line-height: 1.3;
   background: linear-gradient(135deg, #ff6347 0%, #ff4500 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.register-header p {
+.login-header p {
   font-size: 1rem;
   color: #718096;
   margin: 0;
 }
 
 /* Form Styles */
-.register-form {
+.login-form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  position: relative;
+  z-index: 1;
 }
 
 .form-group {
@@ -136,7 +110,7 @@
 
 .form-group input {
   width: 100%;
-  padding: 0.9rem 1.2rem;
+  padding: 1rem 1.3rem;
   font-size: 1rem;
   border: 2px solid #e2e8f0;
   border-radius: 12px;
@@ -184,7 +158,7 @@
 /* Submit Button */
 .submit-btn {
   width: 100%;
-  padding: 1rem;
+  padding: 1.1rem;
   font-size: 1.1rem;
   font-weight: 600;
   color: white;
@@ -206,88 +180,139 @@
   transform: translateY(-1px);
 }
 
-/* Login Link */
-.login-link {
+/* Register Link */
+.register-link {
   text-align: center;
   margin-top: 1.5rem;
   font-size: 0.95rem;
   color: #718096;
 }
 
-.login-link a {
+.register-link a {
   color: #ff6347;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.3s ease;
 }
 
-.login-link a:hover {
+.register-link a:hover {
   color: #ff4500;
   text-decoration: underline;
 }
 
-/* Responsive Design */
-@media (max-width: 968px) {
-  .register-wrapper {
-    flex-direction: column;
-  }
+/* Decorative Elements */
+.login-decoration {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
 
-  .register-image-section {
-    padding: 2rem;
-    min-height: 300px;
-  }
+.circle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  animation: float 20s ease-in-out infinite;
+}
 
-  .register-image-section img {
-    max-width: 300px;
-  }
+.circle-1 {
+  width: 300px;
+  height: 300px;
+  top: 10%;
+  left: 10%;
+  animation-delay: 0s;
+}
 
-  .register-form-section {
-    padding: 2.5rem 2rem;
-  }
+.circle-2 {
+  width: 200px;
+  height: 200px;
+  bottom: 20%;
+  right: 15%;
+  animation-delay: 5s;
+}
 
-  .register-header h1 {
-    font-size: 2rem;
+.circle-3 {
+  width: 150px;
+  height: 150px;
+  top: 60%;
+  left: 70%;
+  animation-delay: 10s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+  }
+  25% {
+    transform: translateY(-30px) translateX(20px);
+  }
+  50% {
+    transform: translateY(-50px) translateX(-20px);
+  }
+  75% {
+    transform: translateY(-30px) translateX(10px);
   }
 }
 
+/* Responsive Design */
 @media (max-width: 640px) {
-  .register-container {
+  .login-container {
     padding: 1rem;
   }
 
-  .register-wrapper {
-    border-radius: 15px;
+  .login-card {
+    padding: 2.5rem 2rem;
+    border-radius: 20px;
   }
 
-  .register-image-section {
-    padding: 1.5rem;
-    min-height: 250px;
+  .login-header h1 {
+    font-size: 2rem;
   }
 
-  .register-image-section img {
-    max-width: 200px;
-  }
-
-  .register-form-section {
-    padding: 2rem 1.5rem;
-  }
-
-  .register-header h1 {
-    font-size: 1.75rem;
-  }
-
-  .register-header p {
+  .login-header p {
     font-size: 0.9rem;
   }
 
   .form-group input {
-    padding: 0.8rem 1rem;
+    padding: 0.9rem 1.1rem;
     font-size: 0.95rem;
   }
 
   .submit-btn {
-    padding: 0.9rem;
+    padding: 1rem;
     font-size: 1rem;
+  }
+
+  .circle-1 {
+    width: 200px;
+    height: 200px;
+  }
+
+  .circle-2 {
+    width: 150px;
+    height: 150px;
+  }
+
+  .circle-3 {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .login-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .form-group input {
+    padding: 0.85rem 1rem;
   }
 }
 

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
+import "./Login.css";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -67,7 +68,7 @@ const Login = () => {
         {
           ...inputValue,
         },
-        { withCredentials: true }
+        { withCredentials: true },
       );
       console.log(data);
       const { success, message, token } = data;
@@ -91,79 +92,67 @@ const Login = () => {
   };
 
   return (
-    <div
-      className="form_container "
-      style={{
-        marginTop: "12rem",
-        marginLeft: "32rem",
-        backgroundColor: "#fff",
-        padding: "2rem 3rem",
-        borderRadius: "0.5rem",
-        width: "100%",
-        height: "23em",
-        maxWidth: "470px",
-        boxShadow: "8px 8px 24px 0px rgba(66, 68, 90, 1)",
-        background:
-          "linear-gradient(90deg,rgba(2, 0, 36, 1),rgba(143, 187, 204, 1) 35%,rgba(0, 212, 255, 1) 100%)",
-      }}
-    >
-      <h2 style={{ fontWeight: "bold" }}>Login Account</h2>
-      <form onSubmit={handleSubmit}>
-        <div style={{ margin: "30px" }}>
-          <input
-            style={{ width: "21rem", height: "40px", borderRadius: "5rem" }}
-            type="email"
-            name="email"
-            value={email}
-            placeholder="Enter your email"
-            onChange={handleOnChange}
-            onBlur={handleBlur}
-          />
-          {errors.email && (
-            <small style={{ color: "red", display: "block" }}>
-              {errors.email}
-            </small>
-          )}
+    <div className="login-container">
+      <div className="login-wrapper">
+        <div className="login-card">
+          <div className="login-header">
+            <h1>Welcome Back</h1>
+            <p>Login to continue your journey</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="login-form">
+            <div className="form-group">
+              <label htmlFor="email">Email Address</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={email}
+                placeholder="Enter your email"
+                onChange={handleOnChange}
+                onBlur={handleBlur}
+                className={errors.email ? "input-error" : ""}
+              />
+              {errors.email && (
+                <span className="error-message">{errors.email}</span>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={password}
+                placeholder="Enter your password"
+                onChange={handleOnChange}
+                onBlur={handleBlur}
+                className={errors.password ? "input-error" : ""}
+              />
+              {errors.password && (
+                <span className="error-message">{errors.password}</span>
+              )}
+            </div>
+
+            <button type="submit" className="submit-btn">
+              Login
+            </button>
+
+            <div className="register-link">
+              Don't have an account?{" "}
+              <Link to={"/register"}>Create one now</Link>
+            </div>
+          </form>
+          <ToastContainer />
         </div>
-        <div style={{ margin: "30px" }}>
-          <input
-            style={{ width: "21rem", height: "40px", borderRadius: "5rem" }}
-            type="password"
-            name="password"
-            value={password}
-            placeholder="Enter your password"
-            onChange={handleOnChange}
-            onBlur={handleBlur}
-          />
-          {errors.password && (
-            <small style={{ color: "red", display: "block" }}>
-              {errors.password}
-            </small>
-          )}
+
+        <div className="login-decoration">
+          <div className="circle circle-1"></div>
+          <div className="circle circle-2"></div>
+          <div className="circle circle-3"></div>
         </div>
-        <button
-          type="submit"
-          style={{
-            padding: "8px",
-            color: "white",
-            fontWeight: "bold",
-            borderBottom: "1px solid #ddd",
-            width: "8rem",
-            marginLeft: "7rem",
-            marginTop: "12px",
-          }}
-          className="btn btn-primary"
-        >
-          Submit
-        </button>
-        <span style={{ marginLeft: "6rem" }}>
-          Don't have an account?{" "}
-          <Link to={"/register"} style={{ color: "black" }}>
-            Register
-          </Link>
-        </span>
-      </form>
-      <ToastContainer />
+      </div>
     </div>
   );
 };
