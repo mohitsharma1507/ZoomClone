@@ -160,12 +160,13 @@ body {
 
 /* Conference View - Remote Videos */
 .ConferenceView {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 1.5rem;
   padding: 1rem 2rem 8rem 2rem;
   max-width: 1400px;
   margin: 0 auto;
+  justify-content: center;
 }
 
 .remoteVideo {
@@ -175,6 +176,8 @@ body {
   background: #1a1a1a;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   transition: all 0.3s ease;
+  width: 350px;
+  flex-shrink: 0;
 }
 
 .remoteVideo:hover {
@@ -332,7 +335,11 @@ body {
 /* Responsive Design */
 @media (max-width: 1024px) {
   .ConferenceView {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+
+  .remoteVideo {
+    width: 300px;
   }
 
   .chatRoom {
@@ -347,8 +354,14 @@ body {
   }
 
   .ConferenceView {
-    grid-template-columns: 1fr;
+    flex-direction: column;
     padding: 1rem 1rem 8rem 1rem;
+    align-items: center;
+  }
+
+  .remoteVideo {
+    width: 100%;
+    max-width: 450px;
   }
 
   .buttonContainer {
