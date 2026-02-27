@@ -186,19 +186,56 @@ const connectToSocket = (server) => {
         if (!messages[matchingRoom]) {
           messages[matchingRoom] = [];
         }
+        const messageId = `${socket.id}-${Date.now()}`;
 
         messages[matchingRoom].push({
           sender: sender,
           data: data,
           "socket-id-sender": socket.id,
+          messageId: messageId,
+          reactions: {},
         });
 
         console.log(`Chat message from ${sender}: ${data}`);
 
         // Broadcast the message to all users in the room
         connections[matchingRoom].forEach((elem) => {
-          io.to(elem).emit("chat-message", data, sender, socket.id);
+          io.to(elem).emit("chat-message", data, sender, socket.id, messageId);
         });
+      }
+    });
+
+    socket.on("messsage-reactions", (messageId, emoji) => {
+      const [matchingRoom, found] = Object.entries(connections).reduce(
+        ([room, isFound], [roomKey, roomValue]) => {
+          if (!isFound && roomValue.includes(socket.id)) {
+            return [roomKey, true];
+          }
+          return [room, isFound];
+        },
+        ["", false],
+      );
+      if (found && messages[matchingRoom]) {
+        const msg = messages[matchingRoom].find(
+          (m) => m.messageId === messageId,
+        );
+        if (msg) {
+          if (!msg.reactions[emoji]) {
+            msg.reactions[emoji] = [];
+          }
+          const idx = msg.reactions[emoji].indexOf(socket.id);
+          if (idx > -1) {
+            msg.reactions[emoji].splice(idx, 1);
+            if (msg.reactions[emoji].length === 0) {
+              delete msg.reactions[emoji];
+            }
+          } else {
+            msg.reactions[emoji].push(socket.id);
+          }
+          connections[matchingRoom].forEach((elem) => {
+            io.to(elem).emit("reaction-updated", messageId, msg.reactions);
+          });
+        }
       }
     });
 
