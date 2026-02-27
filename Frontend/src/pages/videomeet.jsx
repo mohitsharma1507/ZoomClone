@@ -856,6 +856,8 @@ export default function VideoMeetComponent() {
   const [videos, setVideos] = useState([]);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
+  const [reactions, setReactions] = useState({});
+  const [hoveredMessage, setHoveredMessage] = useState(null);
   const [newMessage, setNewMessage] = useState(0);
 
   const videoStreamsRef = useRef(new Map());
@@ -1046,8 +1048,16 @@ export default function VideoMeetComponent() {
     }
   }, [audio, video]);
 
-  const addMessage = (data, sender, socketIdSender) => {
-    setMessages((prev) => [...prev, { sender: sender, data: data }]);
+  const addMessage = (data, sender, socketIdSender, messageId) => {
+    setMessages((prev) => [
+      ...prev,
+      {
+        sender: sender,
+        data: data,
+        socketId: socketIdSender,
+        messageId: messageId || `${socketIdSender}-${Date.now()}`,
+      },
+    ]);
     if (socketIdSender !== socketIdRef.current) {
       setNewMessage((prev) => prev + 1);
     }
@@ -1075,12 +1085,19 @@ export default function VideoMeetComponent() {
       socketRef.current.emit("join-call", window.location.href, username);
     });
 
-    socketRef.current.on("chat-message", (data, sender, socketIdSender) => {
+    socketRef.current.on("chat-message", (data, sender, socketIdSender, messageId) => {
       if (socketIdSender === socketIdRef.current) {
         console.log("Received own chat message, ignoring:", data);
         return;
       }
-      addMessage(data, sender, socketIdSender);
+      addMessage(data, sender, socketIdSender, messageId);
+    });
+
+    socketRef.current.on("reaction-updated", (messageId, updatedReactions) => {
+      setReactions((prev) => ({
+        ...prev,
+        [messageId]: updatedReactions,
+      }));
     });
 
     socketRef.current.on("user-joined", (id, clients, usernames = {}) => {
