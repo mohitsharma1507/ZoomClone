@@ -256,13 +256,13 @@ function Register() {
         {
           ...inputValue,
         },
-        { withCredentials: true }
+        { withCredentials: true },
       );
       const { success, message } = data;
       if (success) {
         handleSuccess(message);
         setTimeout(() => {
-          navigate("/Login");
+          navigate("/verify-otp", { state: { email: inputValue.email } });
         }, 1000);
       } else {
         handleError(message);

@@ -8,6 +8,7 @@ import VideoMeetComponent from "./pages/videomeet";
 import Home from "./pages/home";
 import { AuthProvider } from "./contexts/AuthContext";
 import History from "./pages/history";
+import OTPVerification from "./pages/authentication/OTP";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />}></Route>
           <Route path="/register" element={<Register />}></Route>
+          <Route path="/verify-otp" element={<OTPVerification />}></Route>
           <Route path="/login" element={<Login />}></Route>
           <Route path="/home" element={<Home />}></Route>
           <Route path="/history" element={<History />}></Route>

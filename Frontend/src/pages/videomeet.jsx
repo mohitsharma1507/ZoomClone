@@ -859,6 +859,7 @@ export default function VideoMeetComponent() {
   const [reactions, setReactions] = useState({});
   const [hoveredMessage, setHoveredMessage] = useState(null);
   const [newMessage, setNewMessage] = useState(0);
+  const EMOJI_LIST = ["👍", "❤️", "😂", "👌"];
 
   const videoStreamsRef = useRef(new Map());
 
@@ -1085,13 +1086,16 @@ export default function VideoMeetComponent() {
       socketRef.current.emit("join-call", window.location.href, username);
     });
 
-    socketRef.current.on("chat-message", (data, sender, socketIdSender, messageId) => {
-      if (socketIdSender === socketIdRef.current) {
-        console.log("Received own chat message, ignoring:", data);
-        return;
-      }
-      addMessage(data, sender, socketIdSender, messageId);
-    });
+    socketRef.current.on(
+      "chat-message",
+      (data, sender, socketIdSender, messageId) => {
+        if (socketIdSender === socketIdRef.current) {
+          console.log("Received own chat message, ignoring:", data);
+          return;
+        }
+        addMessage(data, sender, socketIdSender, messageId);
+      },
+    );
 
     socketRef.current.on("reaction-updated", (messageId, updatedReactions) => {
       setReactions((prev) => ({
@@ -1432,11 +1436,31 @@ export default function VideoMeetComponent() {
 
   const sendMessage = () => {
     if (message.trim() === "" || !socketRef.current) return;
-
-    socketRef.current.emit("chat-message", message, username);
-    addMessage(message, username, socketIdRef.current);
-
+    const messageId = `${socketIdRef.current}-${Date.now()}`;
+    socketRef.current.emit("chat-message", message, username, messageId);
+    addMessage(message, username, socketIdRef.current, messageId);
     setMessage("");
+  };
+
+  const sendReaction = (messageId, emoji) => {
+    if (!socketRef.current) return;
+    socketRef.current.emit("message-reaction", messageId, emoji);
+
+    setReactions((prev) => {
+      const current = { ...(prev[messageId] || {}) };
+      if (!current[emoji]) current[emoji] = [];
+
+      const idx = current[emoji].indexOf(socketIdRef.current);
+      if (idx > -1) {
+        current[emoji] = current[emoji].filter(
+          (id) => id !== socketIdRef.current,
+        );
+        if (current[emoji].length === 0) delete current[emoji];
+      } else {
+        current[emoji] = [...current[emoji], socketIdRef.current];
+      }
+      return { ...prev, [messageId]: current };
+    });
   };
 
   const toggleChat = () => {
@@ -1523,12 +1547,64 @@ export default function VideoMeetComponent() {
                 <h1>Chats</h1>
                 <div className="chatDisplay">
                   {messages.length > 0 ? (
-                    messages.map((item, idx) => (
-                      <div key={idx}>
-                        <p>{item.sender}</p>
-                        <p>{item.data}</p>
-                      </div>
-                    ))
+                    messages.map((item, idx) => {
+                      const isMe = item.socketId === socketIdRef.current;
+                      const msgReactions = reactions[item.messageId] || {};
+
+                      return (
+                        <div
+                          key={idx}
+                          className={`messageWrapper ${isMe ? "myMessage" : "theirMessage"}`}
+                          onMouseEnter={() => setHoveredMessage(item.messageId)}
+                          onMouseLeave={() => setHoveredMessage(null)}
+                        >
+                          {/* Emoji Reaction Bar - hover pe dikhega */}
+                          {hoveredMessage === item.messageId && (
+                            <div className="emojiBar">
+                              {EMOJI_LIST.map((emoji) => (
+                                <button
+                                  key={emoji}
+                                  className="emojiBtn"
+                                  onClick={() =>
+                                    sendReaction(item.messageId, emoji)
+                                  }
+                                >
+                                  {emoji}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+
+                          <p className="messageSender">{item.sender}</p>
+                          <p className="messageText">{item.data}</p>
+
+                          {/* Reactions display */}
+                          {Object.keys(msgReactions).length > 0 && (
+                            <div className="reactionsDisplay">
+                              {Object.entries(msgReactions).map(
+                                ([emoji, users]) =>
+                                  users.length > 0 ? (
+                                    <span
+                                      key={emoji}
+                                      className={`reactionChip ${
+                                        users.includes(socketIdRef.current)
+                                          ? "myReaction"
+                                          : ""
+                                      }`}
+                                      onClick={() =>
+                                        sendReaction(item.messageId, emoji)
+                                      }
+                                      title={`${users.length} reaction`}
+                                    >
+                                      {emoji} {users.length}
+                                    </span>
+                                  ) : null,
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })
                   ) : (
                     <p>No Messages Yet</p>
                   )}
