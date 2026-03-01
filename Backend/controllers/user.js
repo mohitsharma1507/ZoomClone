@@ -3,6 +3,10 @@ const Meeting = require("../Models/meeting");
 const { createSecretToken } = require("../utils/secretToken");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const { sendOTPEmail, generateOTP } = require("../utils/mailSender");
+const user = require("../Models/user");
+
+const otpStore = {};
 
 module.exports.Register = async (req, res) => {
   try {
@@ -12,19 +16,29 @@ module.exports.Register = async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const user = await User.create({ email, password, username, createdAt });
-    const token = createSecretToken(user._id);
+    // const hashedPassword = await bcrypt.hash(password, 10);
 
-    res.cookie("token", token, {
-      withCredentials: true,
-      httpOnly: true,
-    });
+    const otp = generateOTP();
 
-    res.status(201).json({
-      message: "User registered successfully",
+    otpStore[email] = {
+      otp,
+      expiresAt: Date.now() + 10 * 60 * 1000,
+      attempts: 0,
+      userData: {
+        email,
+        password: password,
+        username,
+        createdAt,
+      },
+    };
+
+    await sendOTPEmail(email, otp);
+
+    console.log("OTP sent to email:", email);
+
+    res.status(200).json({
+      message: "OTP sent to email. Please verify to complete registration.",
       success: true,
-      user,
-      token,
     });
   } catch (error) {
     console.error(error);
@@ -150,5 +164,112 @@ module.exports.addToHistory = async (req, res) => {
       return res.status(401).json({ message: "Invalid token" });
     }
     res.status(500).json({ message: `Something went wrong: ${e.message}` });
+  }
+};
+
+module.exports.verifyOtp = async (req, res) => {
+  const { email, otp } = req.body;
+  if (!email || !otp) {
+    return res.status(400).json({ message: "Email and OTP are required" });
+  }
+
+  const stored = otpStore[email];
+  if (!stored) {
+    return res
+      .status(400)
+      .json({ message: "OTP not found. Please request a new one." });
+  }
+
+  // Expiry check
+  if (Date.now() > stored.expiresAt) {
+    delete otpStore[email];
+    return res
+      .status(400)
+      .json({ message: "OTP expired. Please request a new one." });
+  }
+
+  // Max attempts check (3 tries)
+  if (stored.attempts >= 3) {
+    delete otpStore[email];
+    return res
+      .status(400)
+      .json({ message: "Too many attempts. Please request a new OTP." });
+  }
+
+  // Wrong OTP
+  if (stored.otp !== otp) {
+    otpStore[email].attempts += 1;
+    const remaining = 3 - otpStore[email].attempts;
+    return res.status(400).json({
+      message: `Invalid OTP. ${remaining} attempts remaining.`,
+    });
+  }
+  try {
+    const { userData } = stored;
+
+    if (userData) {
+      const newUser = await User.create({
+        email: userData.email,
+        password: userData.password,
+        username: userData.username,
+        createdAt: new Date(),
+      });
+
+      const token = createSecretToken(newUser._id);
+      delete otpStore[email];
+
+      return res.status(201).json({
+        message: "Email verified! Account created successfully.",
+        verified: true,
+        success: true,
+        token,
+      });
+    }
+
+    delete otpStore[email];
+    res
+      .status(200)
+      .json({ message: "OTP verified successfully!", verified: true });
+  } catch (error) {
+    console.error("OTP verification error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+module.exports.resendOTP = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+
+  const existing = otpStore[email];
+  if (existing) {
+    const timeLeft = existing.expiresAt - Date.now();
+    const nineMinutes = 9 * 60 * 1000;
+    if (timeLeft > nineMinutes) {
+      return res.status(429).json({
+        message: "Please wait 1 minute before requesting a new OTP.",
+      });
+    }
+  }
+
+  try {
+    const otp = generateOTP();
+
+    otpStore[email] = {
+      otp,
+      expiresAt: Date.now() + 10 * 60 * 1000,
+      attempts: 0,
+      userData: existing ? existing.userData : null,
+    };
+
+    await sendOTPEmail(email, otp);
+
+    console.log(`✅ OTP resent to ${email}`);
+    res.status(200).json({ message: "OTP resent successfully!" });
+  } catch (error) {
+    console.error("Resend OTP error:", error);
+    res.status(500).json({ message: "Failed to resend OTP. Try again." });
   }
 };

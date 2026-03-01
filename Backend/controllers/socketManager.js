@@ -171,7 +171,7 @@ const connectToSocket = (server) => {
       io.to(toId).emit("signal", socket.id, message);
     });
 
-    socket.on("chat-message", (data, sender) => {
+    socket.on("chat-message", (data, sender, messageId) => {
       const [matchingRoom, found] = Object.entries(connections).reduce(
         ([room, isFound], [roomKey, roomValue]) => {
           if (!isFound && roomValue.includes(socket.id)) {
@@ -186,13 +186,13 @@ const connectToSocket = (server) => {
         if (!messages[matchingRoom]) {
           messages[matchingRoom] = [];
         }
-        const messageId = `${socket.id}-${Date.now()}`;
+        const finalMessageId = messageId || `${socket.id}-${Date.now()}`;
 
         messages[matchingRoom].push({
           sender: sender,
           data: data,
           "socket-id-sender": socket.id,
-          messageId: messageId,
+          messageId: finalMessageId,
           reactions: {},
         });
 
@@ -205,7 +205,7 @@ const connectToSocket = (server) => {
       }
     });
 
-    socket.on("messsage-reactions", (messageId, emoji) => {
+    socket.on("message-reaction", (messageId, emoji) => {
       const [matchingRoom, found] = Object.entries(connections).reduce(
         ([room, isFound], [roomKey, roomValue]) => {
           if (!isFound && roomValue.includes(socket.id)) {
